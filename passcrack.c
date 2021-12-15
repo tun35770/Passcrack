@@ -14,7 +14,7 @@ int comparePassToList();
 char *nextPass();
 
 int main(int argc, char *argv[]){
-
+	printf("TEST\n");
 	//start time
 	time_t start = clock();
 
@@ -36,6 +36,7 @@ int main(int argc, char *argv[]){
 		passwords_size++;
 	}
 
+	password = (char *) malloc(6);
 	password = "aaaaaa";
 	int index;
 	while(strcmp(password, "zzzzzz") != 0){
@@ -44,7 +45,7 @@ int main(int argc, char *argv[]){
 			printf("%s at index %d\n", password, index);
 		}
 
-		printf("%s\n", password);
+		printf("PASS: %s\n", password);
 		nextPass();
 	}
 
@@ -80,25 +81,38 @@ char *nextPass(){
 	}
 
 	char *temp;
-	char *substring = malloc(length-numZ);
+	//char *substring = malloc(length-numZ-1);
 	char letter;
 
-	temp = malloc(length-numZ+1);		//allocate only length-numZ chars in temp
-	memcpy(substring, &password[0], length-numZ-1);//get substring from password
-	strcpy(temp, substring);		//put substring in temp
+	temp = malloc(length);		//allocate only length-numZ chars in temp
+	strncat(temp, &password[0], length-numZ-1);//get substring from password
+
+	printf("SUB: %s\n", temp);
+
+	//strcpy(temp, substring);		//put substring in temp
 	memcpy(&letter, &password[length-numZ-1], 1);//save letter to increment
 	letter++;				//increment letter
+
+	printf("LETTER: %c\n", letter);
+
 	strncat(temp, &letter, 1);		//append letter to temp
-	password = malloc(length+1);		//put everything into password
-	memcpy(password, &temp[0], strlen(temp));
+	//password = realloc(password, length);		//put everything into password
+	//strcpy(password, temp);
+
+	printf("TEMP BEFORE Z's:%s\n", temp);
 
 	char a = 'a';
 	for(int i = 0; i < numZ; i++){
-		strncat(password, &a, 1);	//add 'a' to end password
+		strncat(temp, &a, 1);	//add 'a' to end password
 	}
-
-	free(temp);
-	free(substring);
+	//memset(password, '\0', strlen(temp));
+	//printf("PASS: %ld, TEMP: %ld\n", sizeof(password), sizeof(temp));
+	//password = (char *) realloc(password, sizeof(temp));
+	//strcpy(password, temp);
+	printf("TEMP AFTER Z's: %s\n", password);
+	password = temp;
+	//free(temp);
+	//free(substring);
 
 	return password;
 }
