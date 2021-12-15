@@ -40,7 +40,8 @@ int main(int argc, char *argv[]){
 			printf("%s at index %d\n", pass, index);
 		}
 
-		pass = nextPass(pass);
+		printf("%s\n", pass);
+		nextPass(pass);
 	}
 
 
@@ -63,5 +64,36 @@ int comparePassToList(char *password){
 
 char *nextPass(char *password){
 
-	return "";
+	int numZ = 0;
+	int length = strlen(password);
+
+	for(int i = length - 1; i >= 0; i--){
+		if(password[i] == 'z'){
+			numZ++;
+		}
+		else{
+			break;
+		}
+	}
+
+	char *temp;
+	char *substring = malloc(length-numZ-1);
+	char letter;
+
+	temp = malloc(length-numZ);		//allocate only length-numZ chars in temp
+	memcpy(substring, &password, length-numZ-1);//get substring from password
+	strcpy(temp, substring);		//put substring in temp
+	memcpy(&letter, &password[length-numZ-1], 1);//save letter to increment
+	letter++;				//increment letter
+	strncat(temp, &letter, 1);		//append letter to temp
+
+	password = malloc(length);		//put everything into password
+	memcpy(password, &temp, strlen(temp));
+
+	char a = 'a';
+	for(int i = 0; i < numZ; i++){
+		strncat(password, &a, 1);	//add 'a' to end password
+	}
+
+	return password;
 }
