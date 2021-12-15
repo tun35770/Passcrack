@@ -17,7 +17,7 @@ char *passwords[100];
 int passwords_size = 0;
 
 //holds current password being checked
-char *password = "aaaaaa";
+char *password = "a";
 
 //output file from user (if provided)
 FILE *outFile;
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]){
 
 
 	/* ----- MAIN LOOP ----- */
-	while(strcmp(password, "zzzzzz") != 0){
+	while(strlen(password) != 6){
 		index = comparePassToList();	//see if password is in pass file
 
 		if(index != -1){		//password found!
@@ -115,7 +115,7 @@ int main(int argc, char *argv[]){
 			if(print)
 				printf("TIME: %ld	%s at index %d\n", time, password, index);
 		}
-
+		printf("%s\n", password);
 		nextPass();	//increment password
 	}
 }
@@ -153,20 +153,33 @@ char *nextPass(){
 	char *temp;	//build the new password and save it here
 	char letter;	//the letter to be incremented will be here
 
-	temp = malloc(length);		//allocate only length-numZ chars in temp
-	strncat(temp, &password[0], length-numZ-1);//get substring from password
 
-	memcpy(&letter, &password[length-numZ-1], 1);//save letter to increment
-	letter++;				//increment letter
+	//all letters are z, so make new password all a's (with one extra)
+	if(numZ == length){
+		temp = malloc(length+1);
+		char a = 'a';
 
-	strncat(temp, &letter, 1);		//append incremented letter to temp
-
-
-	char a = 'a';
-	for(int i = 0; i < numZ; i++){
-		strncat(temp, &a, 1);	//add 'a' to end of temp
+		for(int i = 0; i < numZ + 1; i++){
+			strcat(temp, &a);
+		}
 	}
 
+	//typical case, simply increment one letter
+	else{
+		temp = malloc(length);
+		strncat(temp, &password[0], length-numZ-1);//get substring from password
+
+		memcpy(&letter, &password[length-numZ-1], 1);//save letter to increment
+		letter++;				//increment letter
+
+		strncat(temp, &letter, 1);		//append incremented letter to temp
+
+
+		char a = 'a';
+		for(int i = 0; i < numZ; i++){
+			strncat(temp, &a, 1);	//add 'a' to end of temp
+		}
+	}
 
 	//set new password to check
 	password = temp;
