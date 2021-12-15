@@ -181,7 +181,7 @@ char *nextPass(){
 		char a = 'a';
 
 		for(int i = 0; i < numZ + 1; i++){
-			strcat(temp, &a);
+			strncat(temp, &a, 1);
 		}
 	}
 
@@ -203,6 +203,7 @@ char *nextPass(){
 	}
 
 	//set new password to check
+	password = realloc(password, sizeof(temp));
 	password = temp;
 
 	return password;
@@ -229,4 +230,6 @@ void initPassword(){
 	for(int i = 0; i < startLen; i++){
 		strncat(password, &a, 1);
 	}
+
+printf("START: %s\n", password);
 }
