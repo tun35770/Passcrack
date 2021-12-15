@@ -42,6 +42,9 @@ int main(int argc, char *argv[]){
 
 		printf("%s\n", pass);
 		nextPass(pass);
+//	strcpy(pass, nextPass(pass));
+		printf("NEW PASS: %s\n", pass);
+		break;
 	}
 
 
@@ -77,23 +80,25 @@ char *nextPass(char *password){
 	}
 
 	char *temp;
-	char *substring = malloc(length-numZ-1);
+	char *substring = malloc(length-numZ);
 	char letter;
 
-	temp = malloc(length-numZ);		//allocate only length-numZ chars in temp
-	memcpy(substring, &password, length-numZ-1);//get substring from password
+	temp = malloc(length-numZ+1);		//allocate only length-numZ chars in temp
+	memcpy(substring, &password[0], length-numZ-1);//get substring from password
 	strcpy(temp, substring);		//put substring in temp
 	memcpy(&letter, &password[length-numZ-1], 1);//save letter to increment
 	letter++;				//increment letter
 	strncat(temp, &letter, 1);		//append letter to temp
-
-	password = malloc(length);		//put everything into password
-	memcpy(password, &temp, strlen(temp));
+	password = malloc(length+1);		//put everything into password
+	memcpy(password, &temp[0], strlen(temp));
 
 	char a = 'a';
 	for(int i = 0; i < numZ; i++){
 		strncat(password, &a, 1);	//add 'a' to end password
 	}
+
+	free(temp);
+	free(substring);
 
 	return password;
 }
