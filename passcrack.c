@@ -22,6 +22,7 @@ char *password = "aaaaaa";
 //output file from user (if provided)
 FILE *outFile;
 
+//-p
 //flag for printing to command line
 bool print = false;
 
@@ -34,7 +35,7 @@ int main(int argc, char *argv[]){
 
 	//too few arguments
 	if(argc < 2){
-		printf("passcrack.c ERROR: Too few arguments provided.\n./passcrack.c <list file> [output file]");
+		printf("passcrack.c ERROR: Too few arguments provided.\n./passcrack.c <list file> [output file] [flag(s)]");
 		exit(1);
 	}
 
@@ -52,11 +53,18 @@ int main(int argc, char *argv[]){
 	//output file is provided in argv
 	if(argc > 2){
 		char *outFileName = argv[2];
-		outFile = fopen(outFileName, "w");
 
-		if(outFile == NULL){
-			printf("passcrack.c ERROR: Failed to open %s. Using default pcout.txt\n", outFileName);
+		//make sure filename is actually provided
+		if(strcmp(outFileName, "-p") != 0){
+
+			outFile = fopen(outFileName, "w");
+
+			if(outFile == NULL){
+				printf("passcrack.c ERROR: Failed to open %s. Using default pcout.txt\n", outFileName);
+			}
 		}
+
+		else outFile = NULL;	//no outFile provided
 	}
 
 	//use default output file
@@ -169,12 +177,13 @@ char *nextPass(){
 //signal handler...self explanatory
 //just for printing stuff after SIGINT
 void signal_handler(int signal){
+
 	if(signal == SIGINT){
 		time_t time = clock();
 
 		fprintf(outFile, "TOTAL TIME: %ld\n", time - start);
 		if(print)
-			printf("TOTAL TIME: %ld\n", time - start);
+			printf("\nTOTAL TIME: %ld\n", time - start);
 		exit(0);
 	}
 }
