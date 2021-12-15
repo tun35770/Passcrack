@@ -4,6 +4,9 @@
 #include <time.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <signal.h>
+
+time_t start;
 
 char *passwords[100];
 int passwords_size = 0;
@@ -12,11 +15,12 @@ char *password;
 
 int comparePassToList();
 char *nextPass();
+void signal_handler(int signal);
 
 int main(int argc, char *argv[]){
-	printf("TEST\n");
+
 	//start time
-	time_t start = clock();
+	start = clock();
 
 	char* listFile = argv[1];
 
@@ -36,9 +40,9 @@ int main(int argc, char *argv[]){
 		passwords_size++;
 	}
 
-	password = (char *) malloc(6);
 	password = "aaaaaa";
 	int index;
+
 	while(strcmp(password, "zzzzzz") != 0){
 		index = comparePassToList();
 		if(index != -1){		//password found!
@@ -105,4 +109,11 @@ char *nextPass(){
 	password = temp;
 
 	return password;
+}
+
+void signal_handler(int signal){
+	if(signal == SIGTERM){
+		printf("TOTAL TIME: %ld\n", clock() - start);
+		exit(0);
+	}
 }
