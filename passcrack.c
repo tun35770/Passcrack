@@ -157,7 +157,7 @@ char *nextPass(){
 //just for printing stuff after SIGINT
 void signal_handler(int signal){
 	//if(signal == SIGINT){
-		printf("TOTAL TIME: %ld\n", clock() - start);
+		fprintf(outFile, "TOTAL TIME: %ld\n", clock() - start);
 		exit(0);
 	//}
 }
