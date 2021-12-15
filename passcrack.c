@@ -53,6 +53,7 @@ int main(int argc, char *argv[]){
 	printf("TIME: %ld", start);
 }
 
+//looks in password list for this password
 int comparePassToList(){
 
 	int passIndex = -1;
@@ -67,11 +68,13 @@ int comparePassToList(){
 	return passIndex;
 }
 
+//increments the password by a single letter
 char *nextPass(){
 
 	int numZ = 0;
 	int length = strlen(password);
 
+	//find out how many z's are at the end, thus which letter to increment
 	if(password[length - 1] == 'z'){
 		for(int i = length - 1; i >= 0; i--){
 			if(password[i] == 'z'){
@@ -80,39 +83,26 @@ char *nextPass(){
 		}
 	}
 
-	char *temp;
-	//char *substring = malloc(length-numZ-1);
-	char letter;
+	char *temp;	//build the new password and save it here
+	char letter;	//the letter to be incremented will be here
 
 	temp = malloc(length);		//allocate only length-numZ chars in temp
 	strncat(temp, &password[0], length-numZ-1);//get substring from password
 
-	printf("SUB: %s\n", temp);
-
-	//strcpy(temp, substring);		//put substring in temp
 	memcpy(&letter, &password[length-numZ-1], 1);//save letter to increment
 	letter++;				//increment letter
 
-	printf("LETTER: %c\n", letter);
+	strncat(temp, &letter, 1);		//append incremented letter to temp
 
-	strncat(temp, &letter, 1);		//append letter to temp
-	//password = realloc(password, length);		//put everything into password
-	//strcpy(password, temp);
-
-	printf("TEMP BEFORE Z's:%s\n", temp);
 
 	char a = 'a';
 	for(int i = 0; i < numZ; i++){
-		strncat(temp, &a, 1);	//add 'a' to end password
+		strncat(temp, &a, 1);	//add 'a' to end of temp
 	}
-	//memset(password, '\0', strlen(temp));
-	//printf("PASS: %ld, TEMP: %ld\n", sizeof(password), sizeof(temp));
-	//password = (char *) realloc(password, sizeof(temp));
-	//strcpy(password, temp);
-	printf("TEMP AFTER Z's: %s\n", password);
+
+
+	//set new password to check
 	password = temp;
-	//free(temp);
-	//free(substring);
 
 	return password;
 }
