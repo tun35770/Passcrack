@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 char *passwords[100];
 int passwords_size = 0;
@@ -37,16 +39,13 @@ int main(int argc, char *argv[]){
 	password = "aaaaaa";
 	int index;
 	while(strcmp(password, "zzzzzz") != 0){
-		index = comparePassToList(password);
+		index = comparePassToList();
 		if(index != -1){		//password found!
 			printf("%s at index %d\n", password, index);
 		}
 
 		printf("%s\n", password);
-		nextPass(password);
-//	strcpy(pass, nextPass(pass));
-		printf("NEW PASS: %s\n", password);
-		break;
+		nextPass();
 	}
 
 
@@ -72,12 +71,11 @@ char *nextPass(){
 	int numZ = 0;
 	int length = strlen(password);
 
-	for(int i = length - 1; i >= 0; i--){
-		if(password[i] == 'z'){
-			numZ++;
-		}
-		else{
-			break;
+	if(password[length - 1] == 'z'){
+		for(int i = length - 1; i >= 0; i--){
+			if(password[i] == 'z'){
+				numZ++;
+			}else break;
 		}
 	}
 
