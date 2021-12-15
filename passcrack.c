@@ -3,7 +3,10 @@
 #include <string.h>
 #include <time.h>
 
-void comparePassToList(char *password);
+char *passwords[100];
+int passwords_size = 0;
+
+int comparePassToList(char *password);
 char *nextPass(char *password);
 
 int main(int argc, char *argv[]){
@@ -19,8 +22,6 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 
-	char* passwords[100];
-	int passwords_size = 0;
 	char* buffer;
 	size_t buffer_size = 0;
 
@@ -32,8 +33,13 @@ int main(int argc, char *argv[]){
 	}
 
 	char *pass = "aaaaaa";
+	int index;
 	while(strcmp(pass, "zzzzzz") != 0){
-		comparePassToList(pass);
+		index = comparePassToList(pass);
+		if(index != -1){		//password found!
+			printf("%s at index %d\n", pass, index);
+		}
+
 		pass = nextPass(pass);
 	}
 
@@ -41,8 +47,18 @@ int main(int argc, char *argv[]){
 	printf("TIME: %ld", start);
 }
 
-void comparePassToList(char *password){
+int comparePassToList(char *password){
 
+	int passIndex = -1;
+
+	for(int i = 0; i < passwords_size; i++){
+		if(strcmp(passwords[i], password) == 0){
+			passIndex = i;
+			break;
+		}
+	}
+
+	return passIndex;
 }
 
 char *nextPass(char *password){
