@@ -6,8 +6,10 @@
 char *passwords[100];
 int passwords_size = 0;
 
-int comparePassToList(char *password);
-char *nextPass(char *password);
+char *password;
+
+int comparePassToList();
+char *nextPass();
 
 int main(int argc, char *argv[]){
 
@@ -32,18 +34,18 @@ int main(int argc, char *argv[]){
 		passwords_size++;
 	}
 
-	char *pass = "aaaaaa";
+	password = "aaaaaa";
 	int index;
-	while(strcmp(pass, "zzzzzz") != 0){
-		index = comparePassToList(pass);
+	while(strcmp(password, "zzzzzz") != 0){
+		index = comparePassToList(password);
 		if(index != -1){		//password found!
-			printf("%s at index %d\n", pass, index);
+			printf("%s at index %d\n", password, index);
 		}
 
-		printf("%s\n", pass);
-		nextPass(pass);
+		printf("%s\n", password);
+		nextPass(password);
 //	strcpy(pass, nextPass(pass));
-		printf("NEW PASS: %s\n", pass);
+		printf("NEW PASS: %s\n", password);
 		break;
 	}
 
@@ -51,7 +53,7 @@ int main(int argc, char *argv[]){
 	printf("TIME: %ld", start);
 }
 
-int comparePassToList(char *password){
+int comparePassToList(){
 
 	int passIndex = -1;
 
@@ -65,7 +67,7 @@ int comparePassToList(char *password){
 	return passIndex;
 }
 
-char *nextPass(char *password){
+char *nextPass(){
 
 	int numZ = 0;
 	int length = strlen(password);
