@@ -230,6 +230,4 @@ void initPassword(){
 	for(int i = 0; i < startLen; i++){
 		strncat(password, &a, 1);
 	}
-
-printf("START: %s\n", password);
 }
