@@ -6,18 +6,34 @@
 #include <fcntl.h>
 #include <signal.h>
 
+//default output filename
+char *DEFAULT_OUTPUT_FILENAME = "pcout.txt";
+
 time_t start;
 
+//array to contain passwords read from password file provided by user
 char *passwords[100];
 int passwords_size = 0;
 
-char *password;
+//holds current password being checked
+char *password = "aaaaaa";
 
+//output file from user (if provided)
+FILE *outFile;
+
+//functions
 int comparePassToList();
 char *nextPass();
 void signal_handler(int signal);
+void setsignal(int signal);
 
 int main(int argc, char *argv[]){
+
+	//too few arguments
+	if(argc < 2){
+		printf("passcrack.c ERROR: Too few arguments provided.\n./passcrack.c <list file> [output file]");
+		exit(1);
+	}
 
 	//start time
 	start = clock();
@@ -30,9 +46,29 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 
+	//output file is provided in argv
+	if(argc > 2){
+		char *outFileName = argv[2];
+		outFile = fopen(outFileName, "w");
+
+		if(outFile == NULL){
+			printf("passcrack.c ERROR: Failed to open %s. Using default pcout.txt\n", outFileName);
+		}
+	}
+
+	//use default output file
+	if(argc <= 2 || outFile == NULL){
+		outFile = fopen(DEFAULT_OUTPUT_FILENAME, "w");
+		if(outFile == NULL){
+			printf("passcrack.c ERROR: Failed to open default output file\n");
+			exit(1);
+		}
+	}
+
 	char* buffer;
 	size_t buffer_size = 0;
 
+	//read passwords from passwrod file, saving to passwords[]
 	while(getline(&buffer, &buffer_size, f) != -1){
 		buffer[strcspn(buffer, "\n")] = 0; //remove \n
 		passwords[passwords_size] = malloc(strlen(buffer));
@@ -40,21 +76,27 @@ int main(int argc, char *argv[]){
 		passwords_size++;
 	}
 
-	password = "aaaaaa";
+	//holds index of password in pass file if a password is found
 	int index;
 
-	while(strcmp(password, "zzzzzz") != 0){
-		index = comparePassToList();
-		if(index != -1){		//password found!
-			printf("%s at index %d\n", password, index);
-		}
-
-		printf("PASS: %s\n", password);
-		nextPass();
+	//set SIGINT handler
+	if(signal(SIGINT, signal_handler) == SIG_ERR){
+		printf("passcrack.c ERROR: Failed to set signal handler\n");
+		exit(1);
 	}
 
 
-	printf("TIME: %ld", start);
+	/* ----- MAIN LOOP ----- */
+	while(strcmp(password, "zzzzzz") != 0){
+		index = comparePassToList();	//see if password is in pass file
+
+		if(index != -1){		//password found!
+			fprintf(outFile, "TIME: %ld	%s at index %d\n", clock(), password, index);
+			//printf("%s at index %d\n", password, index);
+		}
+
+		nextPass();	//increment password
+	}
 }
 
 //looks in password list for this password
@@ -111,9 +153,18 @@ char *nextPass(){
 	return password;
 }
 
+//signal handler...self explanatory
+//just for printing stuff after SIGINT
 void signal_handler(int signal){
-	if(signal == SIGTERM){
+	//if(signal == SIGINT){
 		printf("TOTAL TIME: %ld\n", clock() - start);
 		exit(0);
-	}
+	//}
+}
+
+void setsignal(int signal){
+	sigset_t sigset;
+	sigemptyset(&sigset);
+	sigaddset(&sigset, signal);
+	sigprocmask(SIG_UNBLOCK, &sigset, NULL);
 }
