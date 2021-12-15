@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <stdbool.h>
 
 //default output filename
 char *DEFAULT_OUTPUT_FILENAME = "pcout.txt";
@@ -21,11 +22,13 @@ char *password = "aaaaaa";
 //output file from user (if provided)
 FILE *outFile;
 
+//flag for printing to command line
+bool print = false;
+
 //functions
 int comparePassToList();
 char *nextPass();
 void signal_handler(int signal);
-void setsignal(int signal);
 
 int main(int argc, char *argv[]){
 
@@ -65,6 +68,13 @@ int main(int argc, char *argv[]){
 		}
 	}
 
+	//check for command line print option in arguments
+	for(int i = 1; i < argc; i++){
+		if(strcmp("-p", argv[i]) == 0){
+			print = true;
+		}
+	}
+
 	char* buffer;
 	size_t buffer_size = 0;
 
@@ -91,8 +101,11 @@ int main(int argc, char *argv[]){
 		index = comparePassToList();	//see if password is in pass file
 
 		if(index != -1){		//password found!
-			fprintf(outFile, "TIME: %ld	%s at index %d\n", clock(), password, index);
-			//printf("%s at index %d\n", password, index);
+			time_t time = clock();
+
+			fprintf(outFile, "TIME: %ld	%s at index %d\n", time, password, index);
+			if(print)
+				printf("TIME: %ld	%s at index %d\n", time, password, index);
 		}
 
 		nextPass();	//increment password
@@ -156,15 +169,12 @@ char *nextPass(){
 //signal handler...self explanatory
 //just for printing stuff after SIGINT
 void signal_handler(int signal){
-	//if(signal == SIGINT){
-		fprintf(outFile, "TOTAL TIME: %ld\n", clock() - start);
-		exit(0);
-	//}
-}
+	if(signal == SIGINT){
+		time_t time = clock();
 
-void setsignal(int signal){
-	sigset_t sigset;
-	sigemptyset(&sigset);
-	sigaddset(&sigset, signal);
-	sigprocmask(SIG_UNBLOCK, &sigset, NULL);
+		fprintf(outFile, "TOTAL TIME: %ld\n", time - start);
+		if(print)
+			printf("TOTAL TIME: %ld\n", time - start);
+		exit(0);
+	}
 }
