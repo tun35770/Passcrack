@@ -16,20 +16,26 @@ time_t start;
 char *passwords[100];
 int passwords_size = 0;
 
+//starting/ending length of passwords to check for
+int startLen = 1, endLen = 24;
+
 //holds current password being checked
-char *password = "a";
+char *password;
 
 //output file from user (if provided)
 FILE *outFile;
 
-//-p
-//flag for printing to command line
-bool p = false;
+//flags
+bool p = false;	//print to console
+bool o = false; //output file provided
+bool s = false;	//start length provided
+bool e = false;	//end length provided
 
 //functions
 int comparePassToList();
 char *nextPass();
 void signal_handler(int signal);
+void initPassword();
 
 int main(int argc, char *argv[]){
 
@@ -50,21 +56,39 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 
-	//output file is provided in argv
+	//output file name
+	char *outFileName;
+
+	//check for flags
 	if(argc > 2){
-		char *outFileName = argv[2];
-
-		//make sure filename is actually provided
-		if(strcmp(outFileName, "-p") != 0){
-
-			outFile = fopen(outFileName, "w");
-
-			if(outFile == NULL){
-				printf("passcrack.c ERROR: Failed to open %s. Using default pcout.txt\n", outFileName);
+		for(int i = 2; i < argc; i++){
+			if(strcmp(argv[i], "-p") == 0){
+				p = true;
 			}
-		}
+			if(strcmp(argv[i], "-o") == 0){
+				outFileName = argv[i+1];
+				i++;
+			}
+			if(strcmp(argv[i], "-s") == 0){
+				startLen = atoi(argv[i+1]);
+				i++;
+			}
+			if(strcmp(argv[i], "-e") == 0){
+				endLen = atoi(argv[i+1]);
+				i++;
+			}
 
-		else outFile = NULL;	//no outFile provided
+		}
+	}
+
+	//initialize password with "startLen" a's
+	initPassword();
+
+	if(outFileName != NULL){
+		outFile = fopen(outFileName, "w");
+		if(outFile == NULL){
+			printf("passcrack.c ERROR: Failed to open %s, using default output file pcout.txt\n", outFileName);
+		}
 	}
 
 	//use default output file
@@ -76,12 +100,6 @@ int main(int argc, char *argv[]){
 		}
 	}
 
-	//check for command line print option in arguments
-	for(int i = 1; i < argc; i++){
-		if(strcmp("-p", argv[i]) == 0){
-			p = true;
-		}
-	}
 
 	char* buffer;
 	size_t buffer_size = 0;
@@ -105,7 +123,7 @@ int main(int argc, char *argv[]){
 
 
 	/* ----- MAIN LOOP ----- */
-	while(strlen(password) != 7){
+	while(strlen(password) < endLen){
 		index = comparePassToList();	//see if password is in pass file
 
 		if(index != -1){		//password found!
@@ -198,5 +216,14 @@ void signal_handler(int signal){
 		if(p)
 			printf("\nTOTAL TIME: %ld\n", time - start);
 		exit(0);
+	}
+}
+
+void initPassword(){
+	password = malloc(startLen);
+	char a = 'a';
+
+	for(int i = 0; i < startLen; i++){
+		strncat(password, &a, 1);
 	}
 }
