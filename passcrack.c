@@ -24,7 +24,7 @@ FILE *outFile;
 
 //-p
 //flag for printing to command line
-bool print = false;
+bool p = false;
 
 //functions
 int comparePassToList();
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
 	//check for command line print option in arguments
 	for(int i = 1; i < argc; i++){
 		if(strcmp("-p", argv[i]) == 0){
-			print = true;
+			p = true;
 		}
 	}
 
@@ -105,17 +105,17 @@ int main(int argc, char *argv[]){
 
 
 	/* ----- MAIN LOOP ----- */
-	while(strlen(password) != 6){
+	while(strlen(password) != 7){
 		index = comparePassToList();	//see if password is in pass file
 
 		if(index != -1){		//password found!
 			time_t time = clock();
 
 			fprintf(outFile, "TIME: %ld	%s at index %d\n", time, password, index);
-			if(print)
+			if(p)
 				printf("TIME: %ld	%s at index %d\n", time, password, index);
 		}
-		printf("%s\n", password);
+
 		nextPass();	//increment password
 	}
 }
@@ -195,7 +195,7 @@ void signal_handler(int signal){
 		time_t time = clock();
 
 		fprintf(outFile, "TOTAL TIME: %ld\n", time - start);
-		if(print)
+		if(p)
 			printf("\nTOTAL TIME: %ld\n", time - start);
 		exit(0);
 	}
