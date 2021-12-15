@@ -57,7 +57,7 @@ int main(int argc, char *argv[]){
 	}
 
 	//output file name
-	char *outFileName;
+	char *outFileName = DEFAULT_OUTPUT_FILENAME;
 
 	//check for flags
 	if(argc > 2){
@@ -65,15 +65,15 @@ int main(int argc, char *argv[]){
 			if(strcmp(argv[i], "-p") == 0){
 				p = true;
 			}
-			if(strcmp(argv[i], "-o") == 0){
+			if(strcmp(argv[i], "-o") == 0 && argc >= i+1){
 				outFileName = argv[i+1];
 				i++;
 			}
-			if(strcmp(argv[i], "-s") == 0){
+			if(strcmp(argv[i], "-s") == 0 && argc >= i+1){
 				startLen = atoi(argv[i+1]);
 				i++;
 			}
-			if(strcmp(argv[i], "-e") == 0){
+			if(strcmp(argv[i], "-e") == 0 && argc >= i+1){
 				endLen = atoi(argv[i+1]);
 				i++;
 			}
@@ -84,16 +84,19 @@ int main(int argc, char *argv[]){
 	//initialize password with "startLen" a's
 	initPassword();
 
-	if(outFileName != NULL){
+	bool useDefaultOutputFile = (strcmp(outFileName, DEFAULT_OUTPUT_FILENAME) == 0);
+
+	if(!useDefaultOutputFile){
 		outFile = fopen(outFileName, "w");
 		if(outFile == NULL){
 			printf("passcrack.c ERROR: Failed to open %s, using default output file pcout.txt\n", outFileName);
+			useDefaultOutputFile = true;
 		}
 	}
 
 	//use default output file
-	if(argc <= 2 || outFile == NULL){
-		outFile = fopen(DEFAULT_OUTPUT_FILENAME, "w");
+	if(useDefaultOutputFile){
+		outFile = fopen(outFileName, "w");
 		if(outFile == NULL){
 			printf("passcrack.c ERROR: Failed to open default output file\n");
 			exit(1);
