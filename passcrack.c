@@ -41,7 +41,7 @@ int main(int argc, char *argv[]){
 
 	//too few arguments
 	if(argc < 2){
-		printf("passcrack.c ERROR: Too few arguments provided.\n./passcrack.c <list file> [output file] [flag(s)]\n");
+		printf("passcrack.c ERROR: Too few arguments provided.\n./passcrack.c <list file> [flag(s)]\n");
 		exit(1);
 	}
 
